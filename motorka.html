@@ -142,13 +142,21 @@
     localStorage.setItem('session_' + CLIENT_ID, sessionId);
   }
   var tgBtn = document.getElementById('tgBtn');
-  tgBtn.href = 'https://t.me/' + TELEGRAM_BOT + '?start=' + CLIENT_ID + '_' + sessionId;
+  if (tgBtn) tgBtn.href = 'https://t.me/' + TELEGRAM_BOT + '?start=' + CLIENT_ID + '_' + sessionId;
   var bubble = document.getElementById('chatBubble');
   var widget = document.getElementById('chatWidget');
   var closeBtn = document.getElementById('chatClose');
   var input = document.getElementById('chatInput');
   var sendBtn = document.getElementById('chatSend');
   var messages = document.getElementById('chatMessages');
-  bubble.onclick = function() { bubble.style.display='none'; widget.style.display='block'; input.focus(); };
-  closeBtn.onclick = function() { widget.style.display='none'; bubble.style.display='flex'; };
-  function addUser(t){var w=document.createElement('div');w.style.display='flex';w.style.justifyContent='flex-end';w.style.marginBottom='10px';var b
+  if (bubble) bubble.onclick = function() { bubble.style.display='none'; widget.style.display='block'; input.focus(); };
+  if (closeBtn) closeBtn.onclick = function() { widget.style.display='none'; bubble.style.display='flex'; };
+  function addUser(t){var w=document.createElement('div');w.style.display='flex';w.style.justifyContent='flex-end';w.style.marginBottom='10px';var b=document.createElement('div');b.style.background='#2F5B43';b.style.color='#fff';b.style.padding='8px 12px';b.style.borderRadius='12px';b.style.maxWidth='80%';b.textContent=t;w.appendChild(b);messages.appendChild(w);messages.scrollTop=messages.scrollHeight;}
+  function addBot(t){var w=document.createElement('div');w.style.display='flex';w.style.gap='8px';w.style.marginBottom='10px';var a=document.createElement('div');a.style.width='28px';a.style.height='28px';a.style.borderRadius='50%';a.style.background='#2F5B43';a.style.color='#fff';a.style.display='flex';a.style.alignItems='center';a.style.justifyContent='center';a.style.fontSize='14px';a.style.flexShrink='0';a.textContent='🤖';var b=document.createElement('div');b.style.background='#fff';b.style.padding='8px 12px';b.style.borderRadius='12px';b.style.maxWidth='80%';b.textContent=t;w.appendChild(a);w.appendChild(b);messages.appendChild(w);messages.scrollTop=messages.scrollHeight;}
+  function send(){var t=input.value.trim();if(!t)return;addUser(t);input.value='';fetch(SERVER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t,session_id:sessionId,client_id:CLIENT_ID})}).then(function(r){return r.json();}).then(function(d){addBot(d.reply||'Нет ответа');}).catch(function(){addBot('Ошибка соединения.');});}
+  if (sendBtn) sendBtn.onclick=send;
+  if (input) input.onkeydown=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}};
+})();
+</script>
+</body>
+</html>
